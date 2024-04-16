@@ -1,0 +1,24 @@
+Parameters:
+  BucketName:
+    Description: Enter the name for the Bucket
+    Type: String
+
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      Tags:
+        - Key: Owner
+          Value: Tanmay
+
+Outputs:
+  CrossAccountBucketARN:
+    Value: !GetAtt Bucket.Arn
+    Export:
+      Name: CrossAccountBucket

@@ -1,0 +1,47 @@
+Parameters:
+  RoleName:
+    Type: String
+  OtherAccountIdOrAlias:
+    Type: String
+    Default: 339712780020
+  UserIdOrAlias:
+    Type: String
+    Default: admin
+
+Resources:
+  CustomRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${OtherAccountIdOrAlias}:user/${UserIdOrAlias}'
+            Action: 'sts:AssumeRole'
+            Condition: {}
+
+      Policies:
+        - PolicyName: S3BucketRead
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:Get*'
+                  - 's3:List*'
+                  - 's3:Describe*'
+                  - 's3-object-lambda:Get*'
+                  - 's3-object-lambda:List*'
+                Resource: !ImportValue CrossAccountBucket
+
+              - Effect: Allow
+                Action:
+                  - 's3:ListAllMyBuckets'
+                Resource: 'arn:aws:s3:::*'
+
+Outputs:
+  CrossAccountRoleARN:
+    Value: !GetAtt CustomRole.Arn
+    Export:
+      Name: CrossAccountRole

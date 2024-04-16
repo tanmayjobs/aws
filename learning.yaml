@@ -1,0 +1,35 @@
+Parameters:
+  StorageBucketName:
+    Description: Enter the name for bucket
+    Type: String
+    Default: why.so.serious.hehe
+
+Resources:
+  ImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref StorageBucketName
+
+  CrossAccount:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: S3ReadRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: 'arn:aws:iam::730335249355:user/jack'
+            Action: 'sts:AssumeRole'
+            Condition: {}
+      Policies:
+        - PolicyName: S3Read
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:Get*'
+                  - 's3:List*'
+                  - 's3:Describe*'
+                  - 's3-object-lambda:Get*'
+                  - 's3-object-lambda:List*'
+                Resource: !GetAtt ImagesBucket.Arn
